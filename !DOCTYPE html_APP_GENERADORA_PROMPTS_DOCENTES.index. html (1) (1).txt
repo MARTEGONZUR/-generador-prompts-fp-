@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Prompts para Docentes FP</title>
+    <style>
+        :root {
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+            --color-slate-900-rgb: 19, 52, 59;
+            --color-slate-500-rgb: 98, 108, 113;
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-primary-active: var(--color-teal-700);
+            --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-btn-primary-text: var(--color-cream-50);
+            --color-error: var(--color-red-500);
+            --color-success: var(--color-teal-500);
+            --focus-ring: 0 0 0 3px rgba(var(--color-teal-500-rgb), 0.4);
+            --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-gray-400-rgb: 119, 124, 124;
+                --color-teal-300-rgb: 50, 184, 198;
+                --color-gray-300-rgb: 167, 169, 169;
+                --color-gray-200-rgb: 245, 245, 245;
+                --color-background: var(--color-charcoal-700);
+                --color-surface: var(--color-charcoal-800);
+                --color-text: var(--color-gray-200);
+                --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+                --color-primary: var(--color-teal-300);
+                --color-primary-hover: var(--color-teal-400);
+                --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+                --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+                --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-btn-primary-text: var(--color-slate-900);
+                --color-error: var(--color-red-400);
+                --color-success: var(--color-teal-300);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+            padding: var(--space-24);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: var(--space-8);
+            color: var(--color-text);
+        }
+
+        .subtitle {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-24);
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background-color: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            margin-bottom: var(--space-20);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--color-border);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-20);
+        }
+
+        label {
+            display: block;
+            margin-bottom: var(--space-8);
+            font-weight: 500;
+            color: var(--color-text);
+            font-size: 0.9rem;
+        }
+
+        select, textarea {
+            width: 100%;
+            padding: var(--space-12);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            font-family: var(--font-family-base);
+            font-size: 0.95rem;
+            background-color: var(--color-surface);
+            color: var(--color-text);
+            transition: border-color 0.2s;
+        }
+
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: var(--focus-ring);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: var(--space-12) var(--space-24);
+            background-color: var(--color-primary);
+            color: var(--color-btn-primary-text);
+            border: none;
+            border-radius: var(--radius-base);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--color-primary-hover);
+        }
+
+        .btn:active {
+            background-color: var(--color-primary-active);
+        }
+
+        .btn:focus {
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+
+        .btn-secondary {
+            background-color: var(--color-secondary);
+            color: var(--color-text);
+            margin-top: var(--space-12);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--color-secondary-hover);
+        }
+
+        #result {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            padding: var(--space-20);
+            margin-top: var(--space-20);
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--color-text);
+            display: none;
+        }
+
+        .result-visible {
+            display: block !important;
+        }
+
+        .examples {
+            background-color: var(--color-secondary);
+            border-radius: var(--radius-base);
+            padding: var(--space-16);
+            margin-top: var(--space-12);
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+        }
+
+        .examples strong {
+            color: var(--color-text);
+        }
+
+        .status {
+            padding: var(--space-8) var(--space-12);
+            border-radius: var(--radius-base);
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: var(--space-12);
+            display: none;
+        }
+
+        .status-success {
+            background-color: rgba(var(--color-teal-500-rgb), 0.15);
+            color: var(--color-success);
+            border: 1px solid rgba(var(--color-teal-500-rgb), 0.25);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-16);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: var(--space-16);
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        .icon {
+            display: inline-block;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Generador de Prompts para Docentes de FP</h1>
+        <p class="subtitle">Crea prompts personalizados para IA que faciliten tu labor docente en Formación Profesional</p>
+
+        <div class="card">
+            <form id="promptForm">
+                <div class="form-group">
+                    <label for="taskType"><span class="icon">📋</span>Tipo de Tarea Docente</label>
+                    <select id="taskType" required>
+                        <option value="">Selecciona una tarea...</option>
+                        <option value="planificacion">Planificación de Unidad Didáctica</option>
+                        <option value="actividades">Creación de Actividades Prácticas</option>
+                        <option value="evaluacion">Diseño de Instrumentos de Evaluación</option>
+                        <option value="rubrica">Generación de Rúbricas</option>
+                        <option value="caso">Desarrollo de Casos Prácticos</option>
+                        <option value="recursos">Creación de Recursos Didácticos</option>
+                        <option value="adaptacion">Adaptación Curricular (DUA)</option>
+                        <option value="proyecto">Diseño de Proyecto Integrado</option>
+                        <option value="examenes">Elaboración de Exámenes</option>
+                        <option value="tutoria">Materiales para Tutorías</option>
+                    </select>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="level"><span class="icon">📚</span>Nivel FP</label>
+                        <select id="level" required>
+                            <option value="">Selecciona nivel...</option>
+                            <option value="FP Básica">FP Básica</option>
+                            <option value="Grado Medio">Grado Medio</option>
+                            <option value="Grado Superior">Grado Superior</option>
+                            <option value="Certificado de Profesionalidad">Certificado de Profesionalidad</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="family"><span class="icon">🔧</span>Familia Profesional</label>
+                        <select id="family" required>
+                            <option value="">Selecciona familia...</option>
+                            <option value="Administración y Gestión">Administración y Gestión</option>
+                            <option value="Informática y Comunicaciones">Informática y Comunicaciones</option>
+                            <option value="Sanidad">Sanidad</option>
+                            <option value="Electricidad y Electrónica">Electricidad y Electrónica</option>
+                            <option value="Hostelería y Turismo">Hostelería y Turismo</option>
+                            <option value="Fabricación Mecánica">Fabricación Mecánica</option>
+                            <option value="Comercio y Marketing">Comercio y Marketing</option>
+                            <option value="Servicios Socioculturales">Servicios Socioculturales</option>
+                            <option value="Imagen Personal">Imagen Personal</option>
+                            <option value="Transporte y Mantenimiento">Transporte y Mantenimiento</option>
+                            <option value="Edificación y Obra Civil">Edificación y Obra Civil</option>
+                            <option value="Otra">Otra</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="module"><span class="icon">📖</span>Módulo Profesional</label>
+                    <textarea id="module" placeholder="Ej: Gestión de recursos humanos, Instalaciones eléctricas, Procesos de cocina..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="topic"><span class="icon">💡</span>Tema o Contenido Específico</label>
+                    <textarea id="topic" placeholder="Ej: Nóminas y seguros sociales, Circuitos trifásicos, Técnicas de emplatado..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="duration"><span class="icon">⏱️</span>Duración Estimada</label>
+                    <select id="duration">
+                        <option value="">Opcional...</option>
+                        <option value="1 sesión (1-2 horas)">1 sesión (1-2 horas)</option>
+                        <option value="2-3 sesiones">2-3 sesiones</option>
+                        <option value="1 semana">1 semana</option>
+                        <option value="2 semanas">2 semanas</option>
+                        <option value="1 mes">1 mes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="additional"><span class="icon">✨</span>Requisitos Adicionales (Opcional)</label>
+                    <textarea id="additional" placeholder="Ej: Incluir trabajo en equipo, enfoque en competencias digitales, adaptado para alumnado con necesidades especiales, conectado con empresa real..."></textarea>
+                    <div class="examples">
+                        <strong>Sugerencias:</strong> Metodología específica (ABP, gamificación), contexto laboral real, competencias transversales, nivel de dificultad, recursos disponibles...
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">
+                    <span class="icon">✨</span>Generar Prompt
+                </button>
+            </form>
+        </div>
+
+        <div id="result"></div>
+        <div id="status" class="status"></div>
+        
+        <button id="copyBtn" class="btn btn-secondary" style="display: none;">
+            <span class="icon">📋</span>Copiar al Portapapeles
+        </button>
+    </div>
+
+    <script>
+        const form = document.getElementById('promptForm');
+        const result = document.getElementById('result');
+        const copyBtn = document.getElementById('copyBtn');
+        const status = document.getElementById('status');
+
+        const taskTemplates = {
+            planificacion: 'Actúa como un experto diseñador de programaciones didácticas para Formación Profesional. Diseña una unidad didáctica completa',
+            actividades: 'Actúa como un formador experimentado de FP. Crea {cantidad} actividades prácticas',
+            evaluacion: 'Actúa como especialista en evaluación de competencias profesionales. Diseña instrumentos de evaluación',
+            rubrica: 'Actúa como experto en evaluación por competencias. Crea una rúbrica de evaluación detallada',
+            caso: 'Actúa como profesional del sector. Desarrolla un caso práctico real',
+            recursos: 'Actúa como creador de contenidos educativos para FP. Genera recursos didácticos',
+            adaptacion: 'Actúa como especialista en atención a la diversidad. Adapta los contenidos siguiendo principios DUA',
+            proyecto: 'Actúa como coordinador de proyectos en FP. Diseña un proyecto integrado',
+            examenes: 'Actúa como evaluador de competencias profesionales. Elabora un examen completo',
+            tutoria: 'Actúa como tutor de FP especializado. Crea materiales de tutoría'
+        };
+
+        const taskDetails = {
+            planificacion: 'que incluya: objetivos de aprendizaje, contenidos organizados, metodología, actividades secuenciadas, recursos necesarios, criterios de evaluación y temporalización',
+            actividades: 'progresivas que desarrollen las competencias profesionales del módulo. Cada actividad debe incluir: descripción, objetivos, procedimiento paso a paso, recursos necesarios, tiempo estimado y criterios de evaluación',
+            evaluacion: 'variados (pruebas prácticas, observación sistemática, portafolio, proyecto) que evalúen tanto conocimientos teóricos como habilidades prácticas. Incluye criterios de calificación claros',
+            rubrica: 'con diferentes niveles de logro (excelente, bueno, suficiente, insuficiente) para evaluar las competencias profesionales. Define indicadores observables y medibles para cada criterio',
+            caso: 'basado en situaciones laborales auténticas del sector. El caso debe presentar un problema o desafío profesional que requiera aplicar conocimientos teóricos y habilidades prácticas. Incluye contexto, datos necesarios y preguntas guía',
+            recursos: 'variados y motivadores (presentaciones, infografías, vídeos tutoriales, guías prácticas, hojas de trabajo) adaptados al perfil del alumnado. Los materiales deben conectar teoría con práctica profesional',
+            adaptacion: '(Diseño Universal para el Aprendizaje) ofreciendo múltiples formas de representación, expresión y participación. Incluye estrategias específicas para diferentes necesidades educativas',
+            proyecto: 'que vincule varios módulos profesionales del ciclo formativo. El proyecto debe simular un encargo profesional real e incluir: justificación, objetivos, fases de trabajo, entregables, criterios de evaluación y conexión con empresas',
+            examenes: 'con diferentes tipos de preguntas (teóricas, prácticas, tipo test, casos a resolver). Equilibra la evaluación de conocimientos, procedimientos y actitudes profesionales. Incluye criterios de corrección y puntuación',
+            tutoria: 'para orientación académica y profesional (técnicas de estudio, gestión emocional, inserción laboral, FCT). Adapta el lenguaje y enfoque a las necesidades del alumnado de FP'
+        };
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const taskType = document.getElementById('taskType').value;
+            const level = document.getElementById('level').value;
+            const family = document.getElementById('family').value;
+            const module = document.getElementById('module').value;
+            const topic = document.getElementById('topic').value;
+            const duration = document.getElementById('duration').value;
+            const additional = document.getElementById('additional').value;
+
+            if (!taskType || !level || !family || !module || !topic) {
+                alert('Por favor, completa todos los campos obligatorios');
+                return;
+            }
+
+            let prompt = `${taskTemplates[taskType]} para el módulo "${module}" de ${level} de la familia profesional de ${family}.\n\n`;
+            prompt += `TEMA: ${topic}\n\n`;
+            prompt += `REQUISITOS:\n${taskDetails[taskType]}.\n\n`;
+            
+            if (duration) {
+                prompt += `DURACIÓN: ${duration}\n\n`;
+            }
+            
+            if (additional) {
+                prompt += `CONSIDERACIONES ADICIONALES:\n${additional}\n\n`;
+            }
+            
+            prompt += `FORMATO DE SALIDA:\n`;
+            prompt += `- Estructura clara y profesional\n`;
+            prompt += `- Lenguaje técnico apropiado para el sector\n`;
+            prompt += `- Conexión con competencias profesionales reales\n`;
+            prompt += `- Aplicabilidad directa en el aula de FP\n`;
+            prompt += `- Adaptado a la realidad del mercado laboral actual`;
+
+            result.textContent = prompt;
+            result.classList.add('result-visible');
+            copyBtn.style.display = 'block';
+            
+            result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+
+        copyBtn.addEventListener('click', function() {
+            const textToCopy = result.textContent;
+            
+            navigator.clipboard.writeText(textToCopy).then(function() {
+                status.textContent = '✅ Prompt copiado al portapapeles. Pégalo en ChatGPT, Claude o tu IA favorita';
+                status.className = 'status status-success';
+                status.style.display = 'block';
+                
+                setTimeout(function() {
+                    status.style.display = 'none';
+                }, 4000);
+            }).catch(function(err) {
+                alert('No se pudo copiar automáticamente. Por favor, selecciona y copia el texto manualmente.');
+            });
+        });
+    </script>
+</body>
+</html>
